@@ -1,15 +1,16 @@
-import React from 'react';
 import './App.css';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import HomePage from './HomePage';
+import TradeEarningsRelease from './articles/TradeEarningsRelease';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <p>
-          Refactoring towards order book analytics on-the-go.
-        </p>
-      </header>
-    </div>
+    <BrowserRouter>    
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/articles/TradeEarningsRelease" element={<TradeEarningsRelease />} />
+      </Routes>
+    </BrowserRouter>   
   );
 }
 
