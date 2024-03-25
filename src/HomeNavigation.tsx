@@ -1,6 +1,7 @@
 import { Articles } from './articles/Articles';
 import { Link } from 'react-router-dom';
-import { Grid } from '@mui/material';
+import { Box, Divider, Grid } from '@mui/material';
+import ContactDiscord from './ContactDiscord';
 
 function HomeNavigation() {
   return (
@@ -16,6 +17,9 @@ function HomeNavigation() {
             </li>
           ))}
         </ul>
+        <Divider /> 
+        <Box mt={2}/>
+        <ContactDiscord />
       </Grid>
     </Grid>
   );

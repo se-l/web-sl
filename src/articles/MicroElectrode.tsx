@@ -1,12 +1,8 @@
 import { Grid } from '@mui/material';
 import Header from '../Header';
 import { Article } from './Article';
-import { pdfjs } from 'react-pdf';
 import { EmbedPDF } from "@simplepdf/react-embed-pdf";
-
 import { microelectrodeDropboxUrl } from '../Constants';
-
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
 
 export const articleMicroElectrode = new Article(
   "articles/micro-electrode",
