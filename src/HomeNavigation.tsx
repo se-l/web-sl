@@ -1,7 +1,11 @@
-import React from 'react';
 import { Articles } from './articles/Articles';
 import { Link } from 'react-router-dom';
 import { Grid } from '@mui/material';
+
+const handlePublicDownload = (filename: string) => {
+  const fileUrl = process.env.PUBLIC_URL + `/${filename}`;
+  window.open(fileUrl, '_blank');
+};
 
 function HomeNavigation() {
   return (
@@ -12,10 +16,16 @@ function HomeNavigation() {
           {Articles.map(article => (
             <li key={article.id}>
               <Link to={article.route}>
-                <h3>{article.title}</h3>
+                <h4>{article.title}</h4>
               </Link>
             </li>
           ))}
+
+          <li><h4>
+            <a href="#" onClick={() => handlePublicDownload('microelectrode.pdf')}>
+            (2013) - Micro Electrode for current and energy control of nanotip field electron emitters
+          </a></h4>
+          </li>
         </ul>
       </Grid>
     </Grid>

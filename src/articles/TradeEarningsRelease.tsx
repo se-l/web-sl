@@ -7,7 +7,7 @@ import Disqus from "disqus-react"
 import { Article } from './Article';
 import { getScriptElements } from '../helper';
 
-export const articleEarningsRelease =  new Article("articles/TradeEarningsRelease", "Trade Earnings Releases", "", 1, "Tutorials", ["finance"], "2024-01-01")
+export const articleEarningsRelease =  new Article("articles/TradeEarningsRelease", "Trade Earnings Releases (In Progress)", "", 1, "Tutorials", ["finance"], "2024-01-01")
 const notebookComponent = parse(require('./EarningsRelease.html').default)
 
 const helmets: any[] = []
