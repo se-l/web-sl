@@ -5,7 +5,7 @@ import { disqusShortname, PAGE_URL } from '../Constants';
 import Disqus from "disqus-react"
 import { Article } from './Article';
 
-export const articleResources =  new Article("articles/Resources", "Resources", "", 2, "Tutorials", ["finance"], "2024-01-01")
+export const articleResources =  new Article("articles/resources", "Resources", "", 2, "Tutorials", ["finance"], "2024-01-01")
 const notebookComponent = parse(require('./Resources.html').default)
 
 
