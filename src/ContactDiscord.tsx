@@ -6,7 +6,7 @@ import { Send } from '@mui/icons-material';
 import { discordWebhookUrl } from './Constants';
 import axios from 'axios';
 
-const label = "Send a message to my Discord Channel. Don't forget to mention who you are. Cheers"
+const dfltLabel = "Send a message to my Discord Channel. Don't forget to mention who you are. Cheers"
 const sendSuccess = "Sent successfully."
 const sendFail = (e: string) => `Sending failed due to: ${e}`
 const buttonLabelDefault = "Send To Seb"
@@ -15,10 +15,12 @@ function ContactDiscord() {
   const [msg, setMsg] = useState('')
   const [sendButtonTxt, setSendButtonTxt] = useState(buttonLabelDefault)
   const [sendButtonColor, setSendButtonColor] = useState<string>('primary')
+  const [label, setLabel] = useState<string>(dfltLabel)
 
   const handleSubmit = (event: any) => {
     event.preventDefault();
     if (msg === '') {
+      setLabel("Type a message first. Empty now")
       return;
     }
     
@@ -41,6 +43,7 @@ function ContactDiscord() {
     setMsg(e.target.value)
     setSendButtonColor('primary')
     setSendButtonTxt(buttonLabelDefault)
+    setLabel(dfltLabel)
   };
 
   return (
