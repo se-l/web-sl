@@ -2,9 +2,10 @@ import { Articles } from './articles/Articles';
 import { Link } from 'react-router-dom';
 import { Grid } from '@mui/material';
 
-const handlePublicDownload = (filename: string) => {
-  const fileUrl = process.env.PUBLIC_URL + `/${filename}`;
+const handlePublicDownload = () => {
+  const fileUrl = process.env.PUBLIC_URL + '/microelectrode.pdf';
   window.open(fileUrl, '_blank');
+  return false;
 };
 
 function HomeNavigation() {
@@ -22,7 +23,7 @@ function HomeNavigation() {
           ))}
 
           <li><h4>
-            <a href="#" onClick={() => handlePublicDownload('microelectrode.pdf')}>
+            <a href="#" content-disposition="attachment" content-type="application/pdf" data-content-type="application/pdf" onClick={handlePublicDownload}>
             (2013) - Micro Electrode for current and energy control of nanotip field electron emitters
           </a></h4>
           </li>
