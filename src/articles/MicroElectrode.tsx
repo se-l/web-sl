@@ -2,7 +2,7 @@ import { Grid } from '@mui/material';
 import Header from '../Header';
 import { Article } from './Article';
 import { EmbedPDF } from "@simplepdf/react-embed-pdf";
-import { microelectrodeDropboxUrl } from '../Constants';
+import { microelectrodeUrl } from '../Constants';
 
 export const articleMicroElectrode = new Article(
   "articles/micro-electrode",
@@ -13,20 +13,21 @@ export const articleMicroElectrode = new Article(
   "2024-01-01"
 )
 
+
 function MicroElectrode() {
   return (
     <>
       <Header />
 
-      <p>Refresh the page if no document is displayed or download directly from <a download href={microelectrodeDropboxUrl}>here</a></p>
+      <p>Open in a separate tab <a target='blank' href={microelectrodeUrl}>here</a>. The in browser viewer is down.</p>
 
       <Grid container direction="row" justifyContent="center" alignItems="center" padding={1}>
         <Grid item />
         <Grid item xs={12} sm={12} md={12} lg={11} xl={10}>
-        <EmbedPDF
+          <EmbedPDF
           mode="inline"
           style={{ width: '100%', height: 1800 }}
-          documentURL={microelectrodeDropboxUrl}
+          documentURL={microelectrodeUrl}
         />
         </Grid>
         <Grid item />
