@@ -22,8 +22,8 @@ function App() {
 
 function ServePublicFile() {
   let params = useParams();
-  console.log(params.path);
   const filePath = `${process.env.PUBLIC_URL}/figures/${params.path}`;
+  console.log(filePath);
 
   // Serve the file from the public folder
   return <FileComponent file={filePath} />;
