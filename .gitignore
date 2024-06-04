@@ -25,3 +25,4 @@ yarn-error.log*
 
 .eslintcache
 /aws
+/src/articles/figures/

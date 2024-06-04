@@ -7514,7 +7514,7 @@ a.anchor-link {
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [82]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [2]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">IFrame</span>
@@ -7543,8 +7543,8 @@ a.anchor-link {
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <p>Last Updated: <strong>2024-06-02</strong></p>
 <p>Since May 2024, I've had some success in trading corporate earnings announcements and I am outlining my strategy for the sake of showing work's been done, collaboration and ideally feedback.</p>
-<p>In a nutshell: The implied volatility surface (IVS) of US stocks prior to quarterly earnings announcements is highly elevated, dropping sharply following the release.   The actual stock price move often falls short of the implied move. Nonetheless, swings of +/- 25% are frequent. I built up positions across the IVS based on its estimated drop, skew and stress tests across a +/-20% move.</p>
-<p>For example, take CRM (Salesforce) announcing quarterly earnings on 2024-05-29 after market close. The median IVS before announcement:0%.</p>
+<p>In a nutshell: The implied volatility surface (IVS) of US stocks prior to quarterly earnings announcements is highly elevated, dropping sharply following the release. The actual stock price move often falls short of the implied move. Nonetheless, swings of +/- 25% are frequent. I built up positions across the IVS based on its estimated drop, skew and stress tests across a +/-20% move.</p>
+<p>For example, take CRM (Salesforce) announcing quarterly earnings on 2024-05-29 after market close. The median IVS before announce:0%.</p>
 </div>
 </div>
 </div>
@@ -7553,7 +7553,7 @@ a.anchor-link {
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [83]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [9]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">IFrame</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s1">'figures/ivs0.html'</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s1">'100%'</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">600</span><span class="p">)</span>
@@ -7567,7 +7567,7 @@ a.anchor-link {
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child jp-OutputArea-executeResult">
-<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[83]:</div>
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[9]:</div>
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
 <iframe allowfullscreen="" frameborder="0" height="600" src="figures/ivs0.html" width="100%"></iframe>
 </div>
@@ -7590,7 +7590,7 @@ a.anchor-link {
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [84]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [8]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">IFrame</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s1">'figures/ivs1.html'</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s1">'100%'</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">600</span><span class="p">)</span>
@@ -7604,7 +7604,7 @@ a.anchor-link {
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child jp-OutputArea-executeResult">
-<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[84]:</div>
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[8]:</div>
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
 <iframe allowfullscreen="" frameborder="0" height="600" src="figures/ivs1.html" width="100%"></iframe>
 </div>
@@ -7618,9 +7618,7 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p>The plots are almost identical. The net of T1 - TO shows that for most of the surface, we see a decline of ~2%. Generally, my approximate estimate of IV changes
-for tenors above 1 is -2%, -2% to -6% for tenors between 0.05 and 1 and and 50% decline for the front month. Interestingly, here the front month is even elevated.
-CRM experienced a ~20% drop, meaning whatever was ATM before release is now OTM/ITM.</p>
+<p>The plots are almost identical. The net of T1 - TO shows that for most of the surface, we see a decline of ~2%. Generally, my approximate estimate of IV changes for tenors above 1 is -2%, -2% to -6% for tenors between 0.05 and 1 and and 50% decline for the front month. Interestingly, here the front month is even elevated. CRM experienced a ~20% drop, meaning whatever was ATM before release is now OTM/ITM.</p>
 </div>
 </div>
 </div>
@@ -7629,7 +7627,7 @@ CRM experienced a ~20% drop, meaning whatever was ATM before release is now OTM/
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [88]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [10]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">IFrame</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s1">'figures/ivs_net.html'</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s1">'100%'</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">600</span><span class="p">)</span>
@@ -7643,7 +7641,7 @@ CRM experienced a ~20% drop, meaning whatever was ATM before release is now OTM/
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child jp-OutputArea-executeResult">
-<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[88]:</div>
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[10]:</div>
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
 <iframe allowfullscreen="" frameborder="0" height="600" src="figures/ivs_net.html" width="100%"></iframe>
 </div>
@@ -7666,7 +7664,7 @@ CRM experienced a ~20% drop, meaning whatever was ATM before release is now OTM/
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [86]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [11]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">IFrame</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s1">'figures/vega_mean.html'</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s1">'100%'</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">600</span><span class="p">)</span>
@@ -7680,7 +7678,7 @@ CRM experienced a ~20% drop, meaning whatever was ATM before release is now OTM/
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child jp-OutputArea-executeResult">
-<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[86]:</div>
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[11]:</div>
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
 <iframe allowfullscreen="" frameborder="0" height="600" src="figures/vega_mean.html" width="100%"></iframe>
 </div>
@@ -7695,7 +7693,7 @@ CRM experienced a ~20% drop, meaning whatever was ATM before release is now OTM/
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <p>The interplay of IVs dropping, vega, delta, gamma, skew and having to choose from 100+ options creates ample opportunity for inefficiences to exploit.</p>
-<p>What about Delta, Gamma? Given an estimate how the IVS will move, we can derive a pnl profile for any underlying stock move dS%. Below scatter lines show the estimated pnl for a single delta IV scenario, but the delta spot is varied.   Note the 3 scatter lines as indication for how important a good execution is. Upper bound is a rather theoretical bound where   the spread is earned for all fills. The lower blue line indicates spread is paid for every fill. Red is the estimated fill and PnL for that trade. More spread is earned wherever trading    volume is high (small ATM tenors), more is paid for large tenors with low trading volumes. The estimated PnL peaks around no change in stock price, because that's most common and the wings are elevated in order to not loose money over a massive wing.</p>
+<p>What about Delta, Gamma? Given an estimate how the IVS will move, we can derive a pnl profile for any underlying stock move dS%. Below scatter lines show the estimated pnl for a single delta IV scenario, but the delta spot is varied. Note the 3 scatter lines as indication for how important a good execution is. Upper bound is a rather theoretical bound where the spread is earned for all fills. The lower blue line indicates spread is paid for every fill. Red is the estimated fill and PnL for that trade. More spread is earned wherever trading volume is high (small ATM tenors), more is paid for large tenors with low trading volumes. The estimated PnL peaks around no change in stock price, because that's most common and the wings are elevated in order to not loose money over a massive wing.</p>
 </div>
 </div>
 </div>
@@ -7704,10 +7702,10 @@ CRM experienced a ~20% drop, meaning whatever was ATM before release is now OTM/
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [87]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [12]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="n">IFrame</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s1">'figures/CRM_240529_figdSdIV_iteration.html'</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">1200</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">1400</span><span class="p">)</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">IFrame</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s1">'figures/CRM_240529_figdSdIV.html'</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">1200</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">1400</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -7718,9 +7716,9 @@ CRM experienced a ~20% drop, meaning whatever was ATM before release is now OTM/
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child jp-OutputArea-executeResult">
-<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[87]:</div>
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[12]:</div>
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
-<iframe allowfullscreen="" frameborder="0" height="1400" src="figures/CRM_240529_figdSdIV_iteration.html" width="1200"></iframe>
+<iframe allowfullscreen="" frameborder="0" height="1400" src="figures/CRM_240529_figdSdIV.html" width="1200"></iframe>
 </div>
 </div>
 </div>
@@ -7736,7 +7734,7 @@ CRM experienced a ~20% drop, meaning whatever was ATM before release is now OTM/
 <ul>
 <li>Delta IV Estimation error. The more accurate the forecast, the more vega you can earn.</li>
 <li>Execution / spread. Option spreads are large. Paying the spread would easily eat up all vega profits. The more fills are needed throughout the day, the more spread one may need to pay.</li>
-<li>Execution / delta hedging costs. Calculated deltas are not perfect. But more importantly, fairly often  my option fills were accompanied by small stock price jumps chipping away profit when delta hedging too late. That could be remediated by less latency and market orders, but that's to be investigated. And in my experience, Interactive Brokers does not submit orders quickly.</li>
+<li>Execution / delta hedging costs. Calculated deltas are not perfect. But more importantly, fairly often my option fills were accompanied by small stock price jumps chipping away profit when delta hedging too late. That could be remediated by less latency and market orders, but that's to be investigated. And in my experience, Interactive Brokers does not submit orders quickly.</li>
 </ul>
 </div>
 </div>
