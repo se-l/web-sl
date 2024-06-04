@@ -1,7 +1,9 @@
 import { Grid } from '@mui/material';
 import Header from '../Header';
 import { Article } from './Article';
-import { EmbedPDF } from "@simplepdf/react-embed-pdf";
+import { useState } from 'react';
+import { pdfjs, Document, Page } from 'react-pdf';
+
 import { microelectrodeUrl } from '../Constants';
 
 export const articleMicroElectrode = new Article(
@@ -13,22 +15,40 @@ export const articleMicroElectrode = new Article(
   "2024-01-01"
 )
 
+// pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+//   '/build/pdf.worker.min.js',
+//   import.meta.url,
+// ).toString();
+console.log(`pdfjs.version: ${pdfjs.version}`);
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+
 
 function MicroElectrode() {
+  const [numPages, setNumPages] = useState<number>();
+  const [pageNumber, setPageNumber] = useState<number>(1);
+
+  function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
+    setNumPages(numPages);
+  }
+
   return (
     <>
       <Header />
 
-      <p>Open in a separate tab <a target='blank' href={microelectrodeUrl}>here</a>. The in browser viewer is down.</p>
+      <p>For the best viewing experience, click <a target='blank' href={microelectrodeUrl}>here</a> to use your browser's PDF viewer.</p>
 
       <Grid container direction="row" justifyContent="center" alignItems="center" padding={1}>
         <Grid item />
         <Grid item xs={12} sm={12} md={12} lg={11} xl={10}>
-          <EmbedPDF
-          mode="inline"
-          style={{ width: '100%', height: 1800 }}
-          documentURL={microelectrodeUrl}
-        />
+        <Document
+          file={microelectrodeUrl}
+          onLoadSuccess={({ numPages })=>setNumPages(numPages)}
+      >
+          {Array.apply(null, Array(numPages))
+          .map((x, i)=>i+1)
+          .map(page => <Page pageNumber={page}/>)}
+      </Document>
+
         </Grid>
         <Grid item />
       </Grid>
