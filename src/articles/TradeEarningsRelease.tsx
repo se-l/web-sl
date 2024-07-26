@@ -20,7 +20,7 @@ scriptElements.forEach((el, i) => {
   }
   if (el.props.src !== undefined) s.src = el.props.src
   if (el.props.dangerouslySetInnerHTML !== undefined) s.text = el.props.dangerouslySetInnerHTML.__html
-  helmets.push(<script type={s.type}>{s.text}</script>);
+  helmets.push(<script type={s.type} key={`EarningsRelease${i}`}>{s.text}</script>);
 });
 
 function TradeEarningsRelease() {
