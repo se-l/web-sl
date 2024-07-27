@@ -10,7 +10,7 @@ export const articleMicroElectrode = new Article(
   "articles/micro-electrode",
   "(2013) - Micro Electrode for current and energy control of nanotip field electron emitters",
   "",
-  1,
+  3,
   "Science", ["science"],
   "2024-01-01"
 )

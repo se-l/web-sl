@@ -9,8 +9,8 @@ function HomeNavigation() {
       <Grid item xs={12} sm={12} md={12} lg={11} xl={10}>
         <p>Sharing few notes, notebooks and resources - work related.</p>
         <ul>
-          {Articles.map(article => (
-            <li key={article.id}>
+          {Articles.map((article, i) => (
+            <li key={i}>
               <Link to={article.route}>
                 <h4>{article.title}</h4>
               </Link>

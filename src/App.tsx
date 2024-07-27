@@ -1,10 +1,10 @@
 import './App.css';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import HomePage from './HomePage';
-import TradeEarningsRelease from './articles/TradeEarningsRelease';
-import Resources from './articles/Resources';
+import TradeEarningsRelease from './articles/tradeEarningsRelease/TradeEarningsRelease';
+import Resources from './articles/resources/Resources';
 import MicroElectrode from './articles/MicroElectrode';
-import CalibrateSSVI from './articles/CalibrateSSVI';
+import CalibrateSSVI from './articles/calibrateSSVI/CalibrateSSVI';
 
 function App() {
   return (
