@@ -10,32 +10,23 @@ export const articleMicroElectrode = new Article(
   "articles/micro-electrode",
   "(2013) - Micro Electrode for current and energy control of nanotip field electron emitters",
   "",
-  3,
+  "me",
   "Science", ["science"],
   "2024-01-01"
 )
 
-// pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-//   '/build/pdf.worker.min.js',
-//   import.meta.url,
-// ).toString();
 console.log(`pdfjs.version: ${pdfjs.version}`);
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 
 function MicroElectrode() {
   const [numPages, setNumPages] = useState<number>();
-  const [pageNumber, setPageNumber] = useState<number>(1);
-
-  function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
-    setNumPages(numPages);
-  }
 
   return (
     <>
       <Header />
 
-      <p>For the best viewing experience, click <a target='blank' href={microelectrodeUrl}>here</a> to use your browser's PDF viewer.</p>
+      <p>The pdf is rendered best in your browser's PDF viewer, click <a target='blank' href={microelectrodeUrl}>here</a>.</p>
 
       <Grid container direction="row" justifyContent="center" alignItems="center" padding={1}>
         <Grid item />
@@ -46,7 +37,7 @@ function MicroElectrode() {
       >
           {Array.apply(null, Array(numPages))
           .map((x, i)=>i+1)
-          .map(page => <Page pageNumber={page}/>)}
+          .map(page => <Page key={page} pageNumber={page}/>)}
       </Document>
 
         </Grid>

@@ -1,19 +1,19 @@
 import { Grid } from '@mui/material';
 import Header from '../../Header';
-import parse from 'html-react-parser';
 import { disqusShortname, PAGE_URL } from '../../Constants';
 import Disqus from "disqus-react"
 import { Article } from '../Article';
+import RenderNb from '../../components/RenderNb';
 
-export const articleResources =  new Article("articles/resources", "Resources", "", 2, "Tutorials", ["finance"], "2024-01-01")
-const notebookComponent = parse(require('./Resources.html').default)
+export const articleResources =  new Article("articles/resources", "Resources", "", "resources", "Tutorials", ["finance"], "2024-01-01")
+const notebook = require('./Resources.html').default
 
 
 function TradeEarningsRelease() {
 
     const disqusConfig = {
       url: PAGE_URL,
-      identifier: articleResources.id.toString(),
+      identifier: articleResources.id,
       title: articleResources.title,
     }
 
@@ -23,7 +23,7 @@ function TradeEarningsRelease() {
       <Grid container direction="row" justifyContent="center" alignItems="center" padding={1}>
         <Grid item />
         <Grid item xs={12} sm={12} md={12} lg={11} xl={10}>
-          {notebookComponent}
+          <RenderNb notebook={notebook} />
         </Grid>
         <Grid item />
       </Grid>

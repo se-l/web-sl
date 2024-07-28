@@ -126,10 +126,12 @@ const Header = () => {
                 </DrawerHeader>
                 <Divider />
                 <List>
-                    {Articles.map(article => (
-                        <li key={article.id}>
-                            <a href={`../${article.route}`}>{article.title}</a>
-                        </li>
+                    {Articles.map((article, i) => (
+                        <ListItem            
+                            disableGutters            
+                            key={i}>
+                            <Link href={`../${article.route}`}>{article.title}</Link>                            
+                        </ListItem>
                     ))}
                 </List>
             </Drawer>
