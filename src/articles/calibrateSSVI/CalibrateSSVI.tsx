@@ -6,8 +6,8 @@ import { Article } from '../Article';
 import RenderNb from '../../components/RenderNb';
 import HelmetWrapper from '../../components/HelmetWrapper';
 
-export const articleCalibrateSSVI = new Article("articles/calibrate-ssvi", "Calibrate Implied Volatility Surface (SSVI)", "", "calibrate-ssvi", "Tutorials", ["finance"], "2024-07-26")
-const notebook = require('./CalibrateSSVI.html').default
+export const articleCalibrateSSVI = new Article("articles/calibrate-ssvi", "Calibrate Implied Volatility Surface (SSVI) Part 1", "", "calibrate-ssvi", "Tutorials", ["finance"], "2024-07-26")
+const notebook = require('./CalibrateSSVIPart1.html').default
 
 
 export default function CalibrateSSVI() {
