@@ -5,3 +5,4 @@ export const PAGE_URL = "https://sebastian-lueneburg.com";
 export const disqusShortname = "sebastianlueneburgcom"
 export const microelectrodeUrl = `${process.env.PUBLIC_URL}/2013-ME-for-current-and-energy-control-of-nanotip-field-electron-emitters.pdf`;
 export const discordWebhookUrl = "https://discord.com/api/webhooks/1221762168538796043/B5_BBVOpnXuwhaQiBB-6d8B4q8slJpkc4WOhMIAT04a-S8TIOKL-HEU1PZKWCj0FZ1p-"
+export const ssviStreamlitUrl = "https://research-emcwzdbrbg4cfk4nunpkpd.streamlit.app";

@@ -5,12 +5,14 @@ import TradeEarningsRelease from './articles/tradeEarningsRelease/TradeEarningsR
 import Resources from './articles/resources/Resources';
 import MicroElectrode from './articles/MicroElectrode';
 import CalibrateSSVI from './articles/calibrateSSVI/CalibrateSSVI';
+import SSVIStreamlit from './articles/calibrateSSVI/SSVIStreamlit';
 
 function App() {
   return (
     <BrowserRouter>    
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/articles/ssvi-streamlit" element={<SSVIStreamlit />} />
         <Route path="/articles/calibrate-ssvi" element={<CalibrateSSVI />} />
         <Route path="/articles/trade-earnings-release" element={<TradeEarningsRelease />} />
         <Route path="/articles/resources" element={<Resources />} />
