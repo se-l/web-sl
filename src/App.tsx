@@ -1,22 +1,16 @@
 import './App.css';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import HomePage from './HomePage';
-import TradeEarningsRelease from './articles/tradeEarningsRelease/TradeEarningsRelease';
-import Resources from './articles/resources/Resources';
-import MicroElectrode from './articles/MicroElectrode';
-import CalibrateSSVI from './articles/calibrateSSVI/CalibrateSSVI';
-import SSVIStreamlit from './articles/calibrateSSVI/SSVIStreamlit';
+import { ArticleList } from './articles/ArticleList';
 
 function App() {
   return (
     <BrowserRouter>    
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/articles/ssvi-streamlit" element={<SSVIStreamlit />} />
-        <Route path="/articles/calibrate-ssvi" element={<CalibrateSSVI />} />
-        <Route path="/articles/trade-earnings-release" element={<TradeEarningsRelease />} />
-        <Route path="/articles/resources" element={<Resources />} />
-        <Route path="/articles/micro-electrode" element={<MicroElectrode /> } />
+        {ArticleList.map((article, i) => 
+          <Route key={i} path={`/${article.route}`} element={<article.postComponent />} />
+        )}
       </Routes>
     </BrowserRouter>   
   );

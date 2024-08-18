@@ -5,11 +5,21 @@ import Disqus from "disqus-react"
 import { Article } from '../Article';
 import RenderNb from '../../components/RenderNb';
 
-export const articleResources =  new Article("articles/resources", "Resources", "", "resources", "Tutorials", ["finance"], "2024-01-01")
+export const articleResources =  new Article(
+  "articles/resources", 
+  "Resources", 
+  `Books and perhaps someday other resources that I have found useful.`,
+  "resources", 
+  "Tutorials",
+  ["finance"], 
+  "2024-05-01",
+  "",
+  Resources,
+)
 const notebook = require('./Resources.html').default
 
 
-function TradeEarningsRelease() {
+function Resources() {
 
     const disqusConfig = {
       url: PAGE_URL,
@@ -34,5 +44,3 @@ function TradeEarningsRelease() {
       </>
   );
 }
-
-export default TradeEarningsRelease;

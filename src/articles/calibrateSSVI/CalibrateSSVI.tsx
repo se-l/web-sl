@@ -6,11 +6,21 @@ import { Article } from '../Article';
 import RenderNb from '../../components/RenderNb';
 import HelmetWrapper from '../../components/HelmetWrapper';
 
-export const articleCalibrateSSVI = new Article("articles/calibrate-ssvi", "Calibrate Implied Volatility Surface (SSVI) Part 1", "", "calibrate-ssvi", "Tutorials", ["finance"], "2024-07-26")
+export const articleCalibrateSSVI = new Article(
+  "articles/calibrate-ssvi", 
+  "Calibrate Implied Volatility Surface (SSVI) Part 1", 
+  "A jupyter notebook on calibrating the eSSVI (surface stochastic volatility inspired) model to option prices based on a 2022 paper.",
+  "calibrate-ssvi",
+  "Tutorials", 
+  ["finance"], 
+  "2024-07-05",
+  "2024-08-13",
+  CalibrateSSVI,
+)
 const notebook = require('./CalibrateSSVIPart1.html').default
 
 
-export default function CalibrateSSVI() {
+function CalibrateSSVI() {
 
   const disqusConfig = {
     url: PAGE_URL,

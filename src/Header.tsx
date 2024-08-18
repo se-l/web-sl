@@ -3,7 +3,7 @@ import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import { Home, Menu, LinkedIn, GitHub, ChevronLeft, ChevronRight } from '@mui/icons-material';
 import { HREF_GITHUB, HREF_LINKEDIN } from './Constants';
 import { useState } from 'react';
-import { Articles } from './articles/Articles';
+import { ArticleList } from './articles/ArticleList';
 
 const drawerWidth = 240;
 
@@ -126,7 +126,7 @@ const Header = () => {
                 </DrawerHeader>
                 <Divider />
                 <List>
-                    {Articles.map((article, i) => (
+                    {ArticleList.map((article, i) => (
                         <ListItem            
                             disableGutters            
                             key={i}>

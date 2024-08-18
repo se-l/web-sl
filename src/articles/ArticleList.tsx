@@ -4,7 +4,7 @@ import { articleEarningsRelease } from "./tradeEarningsRelease/TradeEarningsRele
 import { articleCalibrateSSVI } from "./calibrateSSVI/CalibrateSSVI";
 import { articleSSVIStreamlit } from "./calibrateSSVI/SSVIStreamlit";
 
-export const Articles = [
+export const ArticleList = [
   articleSSVIStreamlit,
   articleCalibrateSSVI,
   articleEarningsRelease,

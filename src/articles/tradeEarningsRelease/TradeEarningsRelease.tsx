@@ -6,7 +6,17 @@ import { Article } from '../Article';
 import RenderNb from '../../components/RenderNb';
 import HelmetWrapper from '../../components/HelmetWrapper';
 
-export const articleEarningsRelease =  new Article("articles/trade-earnings-release", "Trading Earnings Releases", "", "trading-earnings-release", "Tutorials", ["finance"], "2024-01-01")
+export const articleEarningsRelease =  new Article(
+  "articles/trade-earnings-release", 
+  "Trading Earnings Releases", 
+  `I traded corporate earnings announcements capturing the difference in implied volatility before and after the announcement.
+  The entiry implied volatility surface change is estimated and a portfolio of option is constructed to benefit from the change irrespective of the direction of the stock price movement.
+  That's fairly akin to a butterfly spread, but here applied to the entire surface, not just a single tenor.`, 
+  "trading-earnings-release", "Tutorials", ["finance"], 
+  "2024-05-01",
+  "",
+  TradeEarningsRelease,
+)
 const notebook = require('./EarningsRelease.html').default
 
 function TradeEarningsRelease() {
@@ -34,5 +44,3 @@ function TradeEarningsRelease() {
     </HelmetWrapper>
   );
 }
-
-export default TradeEarningsRelease;

@@ -8,11 +8,14 @@ import { microelectrodeUrl } from '../Constants';
 
 export const articleMicroElectrode = new Article(
   "articles/micro-electrode",
-  "(2013) - Micro Electrode for current and energy control of nanotip field electron emitters",
-  "",
+  "Micro Electrode for current and energy control of nanotip field electron emitters",
+  "My master thesis at the Max Planck Institute in Berlin. Best time of my university years.",
   "me",
-  "Science", ["science"],
-  "2024-01-01"
+  "Science",
+  ["science"],
+  "2013", 
+  "",
+  MicroElectrode,
 )
 
 console.log(`pdfjs.version: ${pdfjs.version}`);
@@ -46,5 +49,3 @@ function MicroElectrode() {
     </>
   );
 }
-
-export default MicroElectrode;

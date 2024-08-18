@@ -6,11 +6,13 @@ import { ssviStreamlitUrl } from '../../Constants';
 export const articleSSVIStreamlit = new Article(
   "articles/ssvi-streamlit", 
   "Feeling model parameters for Implied Volatility Surface (SSVI)", 
-  "", 
+  "A streamlit app where one can play the model parammeters of the eSSVI model and see the resulting implied volatility surface.", 
   "ssvi-streamlit", 
   "Tutorials", 
   ["finance"], 
-  "2024-08-16"
+  "2024-08-16",
+  "",
+  SSVIStreamlit,
 )
 
 function SSVIStreamlit() {
@@ -33,5 +35,3 @@ function SSVIStreamlit() {
     </>
   );
 }
-
-export default SSVIStreamlit;
