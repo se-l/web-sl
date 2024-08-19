@@ -8,13 +8,13 @@ import HelmetWrapper from '../../components/HelmetWrapper';
 
 export const articleCalibrateSSVI = new Article(
   "articles/calibrate-ssvi", 
-  "Calibrate Implied Volatility Surface (SSVI) Part 1", 
+  "Calibrate Implied Volatility Surface (SSVI) Part 1 / Static", 
   "A jupyter notebook on calibrating the eSSVI (surface stochastic volatility inspired) model to option prices based on a 2022 paper.",
   "calibrate-ssvi",
   "Tutorials", 
   ["finance"], 
   "2024-07-05",
-  "2024-08-13",
+  "2024-08-19",
   CalibrateSSVI,
 )
 const notebook = require('./CalibrateSSVIPart1.html').default

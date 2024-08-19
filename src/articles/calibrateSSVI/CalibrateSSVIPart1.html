@@ -7516,7 +7516,7 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Calibrate-an-implied-volatility-surface---SSVI-(Part-1---on-IV;-expiry-by-expiry)">Calibrate an implied volatility surface - SSVI (Part 1 - on IV; expiry by expiry)<a class="anchor-link" href="#Calibrate-an-implied-volatility-surface---SSVI-(Part-1---on-IV;-expiry-by-expiry)">¶</a></h2>
+<h2 id="Calibrate-an-implied-volatility-surface---SSVI---Part-1-/-static">Calibrate an implied volatility surface - SSVI - Part 1 / static<a class="anchor-link" href="#Calibrate-an-implied-volatility-surface---SSVI---Part-1-/-static">¶</a></h2>
 </div>
 </div>
 </div>
@@ -7527,12 +7527,10 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p>Created: <strong>2024-07-05</strong><br/>
-Last Updated: <strong>2024-08-13</strong><br/>
-This notebook can be cloned from <a href="https://github.com/se-l/research">my GitHub -&gt; research -&gt; articles</a></p>
-<p>There are numerous papers on calibrating implied volatility surface. Here, I take a look at SSVI applied to a day of FDX just before and after their corporate earnings announcement. I want to see the quality of fit and how the model parameters behave throughout the day and across earnings announcement. Regarding fit, I would want:</p>
+<p>This notebook can be cloned from <a href="https://github.com/se-l/research">my GitHub -&gt; research -&gt; articles</a></p>
+<p>There are numerous papers on calibrating implied volatility surface. Here, I take a look at SSVI applied to a day of FDX just before and after their corporate earnings announcement. I want to see the quality of fit and how the model parameters behave throughout the day and an across earnings announcement. Regarding fit, I would want:</p>
 <ul>
-<li>A model that fits actual fill IVs and is always within bid/ask.</li>
+<li>A model that fits actual fill IVs and is always within the bid/ask spread.</li>
 <li>Fitting error plotted with respect to tenor and moneyness.</li>
 </ul>
 <p>SSVI stands for Surface Stochastic Volatility Inspired. The approach has been applied from: <a href="https://arxiv.org/abs/2204.00312">No arbitrage global parametrization for the eSSVI volatility, A. Mingon 2022</a> which itself is extended from extended from <a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2971502">The extended SSVI volatility surface, Hendriks, Martini 2017</a> and Gathedral (2012).</p>
@@ -7560,11 +7558,11 @@ e</p>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p>Skip the code. Briefly, it:</p>
+<p>You can skip the code blocks. Briefly, it:</p>
 <ul>
 <li>Imports few bits so you can reproduce this</li>
 <li>Loads &amp; scopes data. IVs have been pre-calculated. This is not about using QuantLib now</li>
-<li>Calibrates with a custom IV surface class that uses scipy.optimize for a least-squares optimizing minimizing RMSE of fill IVs vs the model.</li>
+<li>Calibrates with a custom IV surface class that uses scipy.optimize for a least-squares optimizing minimizing RMSE of sample prices vs the model prices.</li>
 </ul>
 </div>
 </div>
@@ -7590,7 +7588,7 @@ e</p>
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [8]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [2]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -7614,13 +7612,14 @@ e</p>
 
 <span class="n">release_date</span> <span class="o">=</span> <span class="n">date</span><span class="p">(</span><span class="mi">2024</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>
 <span class="n">equity</span> <span class="o">=</span> <span class="n">Equity</span><span class="p">(</span><span class="s1">'FDX'</span><span class="p">)</span>
+<span class="n">sym</span> <span class="o">=</span> <span class="n">equity</span><span class="o">.</span><span class="n">symbol</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 <span class="n">moneyness_fit</span> <span class="o">=</span> <span class="s1">'moneyness_fwd_ln'</span>
 <span class="n">iv_col_nm</span> <span class="o">=</span> <span class="s1">'mid_price_iv'</span>
 <span class="n">weight_col_nm</span> <span class="o">=</span> <span class="s1">'volume'</span>
 <span class="n">min_mny</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.3</span>
 <span class="n">max_mny</span> <span class="o">=</span> <span class="mf">0.3</span>
 <span class="n">rate</span> <span class="o">=</span> <span class="n">DiscountRateMarket</span>
-<span class="n">dividend_yield</span> <span class="o">=</span> <span class="n">get_dividend_yield</span><span class="p">(</span><span class="n">equity</span><span class="o">.</span><span class="n">symbol</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+<span class="n">dividend_yield</span> <span class="o">=</span> <span class="n">get_dividend_yield</span><span class="p">(</span><span class="n">sym</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">release_date</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -7647,7 +7646,36 @@ e</p>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h5 id="Load-&amp;-Scope">Load &amp; Scope<a class="anchor-link" href="#Load-&amp;-Scope">¶</a></h5>
+<h3 id="Load-&amp;-Scope">Load &amp; Scope<a class="anchor-link" href="#Load-&amp;-Scope">¶</a></h3>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=efe0ee4e-d81b-4bc3-8f99-d0448dd6ccee">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [3]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">scope_df</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span><span class="p">[(</span><span class="n">x</span><span class="p">[</span><span class="n">moneyness_fit</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">max_mny</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">moneyness_fit</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">min_mny</span><span class="p">)]</span>
+
+
+<span class="k">def</span> <span class="nf">get_df_xy</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">dates</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">date</span><span class="p">]):</span>
+
+    <span class="k">if</span> <span class="nb">all</span><span class="p">((</span><span class="n">c</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'bid_iv'</span><span class="p">,</span> <span class="s1">'ask_iv'</span><span class="p">))):</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="s1">'bid_iv'</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">'ask_iv'</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">)]</span>
+    <span class="k">elif</span> <span class="nb">all</span><span class="p">((</span><span class="n">c</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'fill_iv'</span><span class="p">,</span> <span class="p">))):</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">'fill_iv'</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">]</span>
+
+    <span class="c1"># Scope by time of day</span>
+    <span class="n">v_ts</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_level_values</span><span class="p">(</span><span class="s1">'ts'</span><span class="p">)</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+    <span class="n">v_ts_scoped</span> <span class="o">=</span> <span class="n">v_ts</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">v_ts</span><span class="o">.</span><span class="n">date</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dates</span><span class="p">))</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">v_ts</span><span class="o">.</span><span class="n">hour</span> <span class="o">&gt;=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">v_ts</span><span class="o">.</span><span class="n">hour</span> <span class="o">&lt;=</span> <span class="mi">16</span><span class="p">)]</span>
+
+    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">v_ts_scoped</span><span class="p">]</span>
+</pre></div>
+</div>
 </div>
 </div>
 </div>
@@ -7656,12 +7684,13 @@ e</p>
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [3]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [4]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="s1">'df_quotes.xlsx'</span><span class="p">)</span>
 <span class="n">df</span><span class="p">[</span><span class="s1">'expiry'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">'expiry'</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">date</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">)</span> <span class="k">else</span> <span class="n">x</span><span class="p">)</span>
 <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s1">'ts'</span><span class="p">,</span> <span class="s1">'expiry'</span><span class="p">,</span> <span class="s1">'strike'</span><span class="p">,</span> <span class="s1">'right'</span><span class="p">])</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">'mid_price'</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">'ask_close'</span><span class="p">]</span> <span class="o">+</span> <span class="n">df</span><span class="p">[</span><span class="s1">'bid_close'</span><span class="p">])</span><span class="o">/</span><span class="mi">2</span>
 
 <span class="n">df_trades</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="s1">'df_trades.xlsx'</span><span class="p">)</span>
 <span class="n">df_trades</span><span class="p">[</span><span class="s1">'expiry'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_trades</span><span class="p">[</span><span class="s1">'expiry'</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">date</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">)</span> <span class="k">else</span> <span class="n">x</span><span class="p">)</span>
@@ -7676,24 +7705,15 @@ e</p>
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [4]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [5]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">release_date_p1</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="o">.</span><span class="n">date</span><span class="p">()</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">release_date</span><span class="p">,</span> <span class="n">release_date</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">freq</span><span class="o">=</span><span class="s1">'D'</span><span class="p">))][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
-<span class="c1"># Scope by time of day excluding 0:30 -&gt; 10</span>
-<span class="n">v_ts</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_level_values</span><span class="p">(</span><span class="s1">'ts'</span><span class="p">)</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
-<span class="n">v_ts_pre_release</span> <span class="o">=</span> <span class="n">v_ts</span><span class="p">[(</span><span class="n">v_ts</span><span class="o">.</span><span class="n">date</span> <span class="o">==</span> <span class="n">release_date</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">v_ts</span><span class="o">.</span><span class="n">hour</span> <span class="o">&gt;=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">v_ts</span><span class="o">.</span><span class="n">hour</span> <span class="o">&lt;</span> <span class="mi">16</span><span class="p">)]</span>
-<span class="n">v_ts_post_release</span> <span class="o">=</span> <span class="n">v_ts</span><span class="p">[(</span><span class="n">v_ts</span><span class="o">.</span><span class="n">date</span> <span class="o">==</span> <span class="n">release_date_p1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">v_ts</span><span class="o">.</span><span class="n">hour</span> <span class="o">&gt;=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">v_ts</span><span class="o">.</span><span class="n">hour</span> <span class="o">&lt;</span> <span class="mi">16</span><span class="p">)]</span>
-
-<span class="n">vt_ts</span> <span class="o">=</span> <span class="n">df_trades</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_level_values</span><span class="p">(</span><span class="s1">'ts'</span><span class="p">)</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
-<span class="n">vt_ts_pre_release</span> <span class="o">=</span> <span class="n">vt_ts</span><span class="p">[(</span><span class="n">vt_ts</span><span class="o">.</span><span class="n">date</span> <span class="o">==</span> <span class="n">release_date</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">vt_ts</span><span class="o">.</span><span class="n">hour</span> <span class="o">&gt;=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">vt_ts</span><span class="o">.</span><span class="n">hour</span> <span class="o">&lt;</span> <span class="mi">16</span><span class="p">)]</span>
-<span class="n">vt_ts_post_release</span> <span class="o">=</span> <span class="n">vt_ts</span><span class="p">[(</span><span class="n">vt_ts</span><span class="o">.</span><span class="n">date</span> <span class="o">==</span> <span class="n">release_date_p1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">vt_ts</span><span class="o">.</span><span class="n">hour</span> <span class="o">&gt;=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">vt_ts</span><span class="o">.</span><span class="n">hour</span> <span class="o">&lt;</span> <span class="mi">16</span><span class="p">)]</span>
-
-<span class="n">df_q_pre</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">v_ts_pre_release</span><span class="p">]</span>
-<span class="n">df_q_post</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">v_ts_post_release</span><span class="p">]</span>
-<span class="n">df_t_pre</span> <span class="o">=</span> <span class="n">df_trades</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">vt_ts_pre_release</span><span class="p">]</span>
-<span class="n">df_t_post</span> <span class="o">=</span> <span class="n">df_trades</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">vt_ts_post_release</span><span class="p">]</span>
+<span class="n">df_q_pre</span> <span class="o">=</span> <span class="n">get_df_xy</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="p">[</span><span class="n">release_date</span><span class="p">])</span>
+<span class="n">df_q_post</span> <span class="o">=</span> <span class="n">get_df_xy</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="p">[</span><span class="n">release_date_p1</span><span class="p">])</span>
+<span class="n">df_t_pre</span> <span class="o">=</span> <span class="n">get_df_xy</span><span class="p">(</span><span class="n">df_trades</span><span class="p">,</span> <span class="p">[</span><span class="n">release_date</span><span class="p">])</span>
+<span class="n">df_t_post</span> <span class="o">=</span> <span class="n">get_df_xy</span><span class="p">(</span><span class="n">df_trades</span><span class="p">,</span> <span class="p">[</span><span class="n">release_date_p1</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -7706,27 +7726,46 @@ e</p>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h5 id="Calibrate">Calibrate<a class="anchor-link" href="#Calibrate">¶</a></h5>
+<h3 id="Calibrate">Calibrate<a class="anchor-link" href="#Calibrate">¶</a></h3>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=5a6390ca-3533-43f1-a6df-1bbfa5d094ab">
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=83a8a7e6-324c-4bc4-afed-314f1c625e49">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<p>The RMSE is calculated based on differences in option PRICES, not IVs.
+First I fitted IV directly, then prices and finally implemented the reparameterization discussed in the paper to fit an arbitrage-free surface.
+The samples fitted are a union on quotes (mid price) and trades (fill price) of the entire day. Mid-prices can have fairly significant intraday deviation when spreads are large, something to be mindful when fitting snapshots.</p>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=0724e63d-27a5-4636-8545-8a5f4ec9fc0a">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [9]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [6]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="o">%%capture</span>
-<span class="k">def</span> <span class="nf">scope_df</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">x</span><span class="p">[(</span><span class="n">x</span><span class="p">[</span><span class="n">moneyness_fit</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">max_mny</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">moneyness_fit</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">min_mny</span><span class="p">)]</span>
-
-<span class="n">calibration_items_fill</span> <span class="o">=</span> <span class="n">df2calibration_items</span><span class="p">(</span><span class="n">scope_df</span><span class="p">(</span><span class="n">df_t_pre</span><span class="p">),</span> <span class="n">release_date</span><span class="p">,</span> <span class="n">iv_col_nm</span><span class="o">=</span><span class="s1">'fill_iv'</span><span class="p">,</span> <span class="n">weight_col_nm</span><span class="o">=</span><span class="n">weight_col_nm</span><span class="p">,</span> <span class="n">price_col_nm</span><span class="o">=</span><span class="s1">'close'</span><span class="p">,</span> <span class="n">spot_col_nm</span><span class="o">=</span><span class="s1">'spot'</span><span class="p">,</span> <span class="n">rf</span><span class="o">=</span><span class="n">rate</span><span class="p">,</span> <span class="n">dividend_yield</span><span class="o">=</span><span class="n">dividend_yield</span><span class="p">,</span> <span class="n">vega_col_nm</span><span class="o">=</span><span class="s1">'vega_fill_iv'</span><span class="p">)</span>
-<span class="n">ivs_t0</span> <span class="o">=</span> <span class="n">IVSurface</span><span class="p">(</span><span class="n">equity</span><span class="p">)</span><span class="o">.</span><span class="n">calibrate</span><span class="p">(</span><span class="n">calibration_items_fill</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">ivs_0</span> <span class="o">=</span> <span class="n">IVSurface</span><span class="p">(</span><span class="n">equity</span><span class="p">)</span>
 
 <span class="n">calibration_items_bid</span> <span class="o">=</span> <span class="n">df2calibration_items</span><span class="p">(</span><span class="n">scope_df</span><span class="p">(</span><span class="n">df_q_pre</span><span class="p">),</span> <span class="n">release_date</span><span class="p">,</span> <span class="n">iv_col_nm</span><span class="o">=</span><span class="s1">'bid_iv'</span><span class="p">,</span> <span class="n">price_col_nm</span><span class="o">=</span><span class="s1">'bid_close'</span><span class="p">,</span> <span class="n">spot_col_nm</span><span class="o">=</span><span class="s1">'spot'</span><span class="p">,</span> <span class="n">rf</span><span class="o">=</span><span class="n">rate</span><span class="p">,</span> <span class="n">dividend_yield</span><span class="o">=</span><span class="n">dividend_yield</span><span class="p">,</span> <span class="n">weight_col_nm</span><span class="o">=</span><span class="s1">'vega_mid_iv'</span><span class="p">)</span>
 <span class="n">calibration_items_ask</span> <span class="o">=</span> <span class="n">df2calibration_items</span><span class="p">(</span><span class="n">scope_df</span><span class="p">(</span><span class="n">df_q_pre</span><span class="p">),</span> <span class="n">release_date</span><span class="p">,</span> <span class="n">iv_col_nm</span><span class="o">=</span><span class="s1">'ask_iv'</span><span class="p">,</span> <span class="n">price_col_nm</span><span class="o">=</span><span class="s1">'ask_close'</span><span class="p">,</span> <span class="n">spot_col_nm</span><span class="o">=</span><span class="s1">'spot'</span><span class="p">,</span> <span class="n">rf</span><span class="o">=</span><span class="n">rate</span><span class="p">,</span> <span class="n">dividend_yield</span><span class="o">=</span><span class="n">dividend_yield</span><span class="p">,</span> <span class="n">weight_col_nm</span><span class="o">=</span><span class="s1">'vega_mid_iv'</span><span class="p">)</span>
+<span class="n">calibration_items_quotes</span> <span class="o">=</span> <span class="n">df2calibration_items</span><span class="p">(</span><span class="n">scope_df</span><span class="p">(</span><span class="n">df_q_pre</span><span class="p">),</span> <span class="n">release_date</span><span class="p">,</span> <span class="n">iv_col_nm</span><span class="o">=</span><span class="s1">'mid_price_iv'</span><span class="p">,</span> <span class="n">price_col_nm</span><span class="o">=</span><span class="s1">'mid_price'</span><span class="p">,</span> <span class="n">spot_col_nm</span><span class="o">=</span><span class="s1">'spot'</span><span class="p">,</span> <span class="n">rf</span><span class="o">=</span><span class="n">rate</span><span class="p">,</span> <span class="n">dividend_yield</span><span class="o">=</span><span class="n">dividend_yield</span><span class="p">,</span> <span class="n">weight_col_nm</span><span class="o">=</span><span class="s1">'vega_mid_iv'</span><span class="p">)</span>
+<span class="n">calibration_items_fill</span> <span class="o">=</span> <span class="n">df2calibration_items</span><span class="p">(</span><span class="n">scope_df</span><span class="p">(</span><span class="n">df_t_pre</span><span class="p">),</span> <span class="n">release_date</span><span class="p">,</span> <span class="n">iv_col_nm</span><span class="o">=</span><span class="s1">'fill_iv'</span><span class="p">,</span> <span class="n">price_col_nm</span><span class="o">=</span><span class="s1">'close'</span><span class="p">,</span> <span class="n">spot_col_nm</span><span class="o">=</span><span class="s1">'spot'</span><span class="p">,</span> <span class="n">rf</span><span class="o">=</span><span class="n">rate</span><span class="p">,</span> <span class="n">dividend_yield</span><span class="o">=</span><span class="n">dividend_yield</span><span class="p">,</span> <span class="n">weight_col_nm</span><span class="o">=</span><span class="s1">'vega_fill_iv'</span><span class="p">,</span> <span class="n">vega_col_nm</span><span class="o">=</span><span class="s1">'vega_fill_iv'</span><span class="p">)</span>
+
+<span class="c1"># To be weighted</span>
+<span class="n">calibration_items</span> <span class="o">=</span> <span class="n">calibration_items_fill</span> <span class="o">+</span> <span class="n">calibration_items_quotes</span>
+
+<span class="c1"># Fit entire surface</span>
+<span class="k">for</span> <span class="n">right</span> <span class="ow">in</span> <span class="p">[</span><span class="n">OptionRight</span><span class="o">.</span><span class="n">call</span><span class="p">,</span> <span class="n">OptionRight</span><span class="o">.</span><span class="n">put</span><span class="p">]:</span>
+    <span class="n">samples</span> <span class="o">=</span> <span class="p">{</span><span class="n">item</span><span class="o">.</span><span class="n">tenor_dt</span><span class="p">:</span> <span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">calibration_items</span> <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">right</span> <span class="o">==</span> <span class="n">right</span><span class="p">}</span>
+    <span class="n">ivs_0</span><span class="o">.</span><span class="n">calibrate_surface</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="n">samples</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -7739,9 +7778,23 @@ e</p>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>2024-08-13 17:07:33,943 - INFO Calibration done for FDX total_rmse=0.6786495889550098
+<pre>2024-08-19 14:49:33,443 - INFO Calibrating FDX call. # tenors: 17. # samples: 17. # params: 51
+2024-08-19 14:49:42,629 - INFO Calibrated in 9.19sec for FDX call total_rmse=0.7377322422072511
+2024-08-19 14:49:42,631 - INFO Calibrating FDX put. # tenors: 17. # samples: 17. # params: 51
+2024-08-19 14:49:47,891 - INFO Calibrated in 5.26sec for FDX put total_rmse=1.645647593939007
 </pre>
 </div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=de6cdaf3-6816-4c21-8001-d3c7d7501a2f">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<p>The only constraint: $\theta$ &gt; 0, that is, the implied ATM variance is never negative.</p>
 </div>
 </div>
 </div>
@@ -7752,18 +7805,7 @@ e</p>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h5 id="Plot">Plot<a class="anchor-link" href="#Plot">¶</a></h5><p>I used actual trades between 10am and 3pm. One may want to use snaps, shorter timeperiods, moving windows (getting to that later)</p>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=14807d61-1f69-4931-9693-86bc9dde25d7">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p>The whole surface:</p>
+<h5 id="Plot-Surface">Plot Surface<a class="anchor-link" href="#Plot-Surface">¶</a></h5><p>I used actual trades between 10am and 4pm. One may want to use snaps, shorter timeperiods, moving windows (getting to that in part 2)</p>
 </div>
 </div>
 </div>
@@ -7772,11 +7814,11 @@ e</p>
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [10]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [7]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="n">fn</span> <span class="o">=</span> <span class="s1">'ivs.html'</span>
-<span class="n">ivs_t0</span><span class="o">.</span><span class="n">plot_surface</span><span class="p">(</span><span class="n">fn</span><span class="o">=</span><span class="n">fn</span><span class="p">,</span> <span class="n">open_browser</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">fn</span> <span class="o">=</span> <span class="s1">'ivs_0.html'</span>
+<span class="n">ivs_0</span><span class="o">.</span><span class="n">plot_surface</span><span class="p">(</span><span class="n">fn</span><span class="o">=</span><span class="n">fn</span><span class="p">,</span> <span class="n">open_browser</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">IFrame</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s1">'figures/'</span> <span class="o">+</span> <span class="n">fn</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s1">'100%'</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">800</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -7787,20 +7829,10 @@ e</p>
 <div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>C:\repos\research\options\typess\iv_surface_essvi.py:68: RuntimeWarning:
-
-invalid value encountered in sqrt
-
-</pre>
-</div>
-</div>
 <div class="jp-OutputArea-child jp-OutputArea-executeResult">
-<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[10]:</div>
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[7]:</div>
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
-<iframe allowfullscreen="" frameborder="0" height="800" src="figures/ivs.html" width="100%"></iframe>
+<iframe allowfullscreen="" frameborder="0" height="800" src="figures/ivs_0.html" width="100%"></iframe>
 </div>
 </div>
 </div>
@@ -7812,7 +7844,24 @@ invalid value encountered in sqrt
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p>A well matching slice. Weight is the respective trade volume. Previously, I used vega.</p>
+<p>Let's look at a well matching slice and not so well matching slice. Weight is vega.</p>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=8559b948-3138-42cd-8564-a3fcb9330add">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [8]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Calling </span>
+<span class="c1"># ivs_0.plot_all_smiles(release_date, calibration_items_bid=calibration_items_bid, calibration_items_ask=calibration_items_ask)</span>
+<span class="c1"># ivs_0.plot_all_prices(release_date, calibration_items_bid=calibration_items_bid, calibration_items_ask=calibration_items_ask)</span>
+<span class="c1"># plots all smiles and price</span>
+</pre></div>
+</div>
 </div>
 </div>
 </div>
@@ -7821,13 +7870,92 @@ invalid value encountered in sqrt
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [9]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">ix_best_slice</span> <span class="o">=</span> <span class="p">(</span><span class="n">date</span><span class="p">(</span><span class="mi">2024</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span> <span class="s1">'call'</span><span class="p">)</span>
+<span class="n">fn</span><span class="o">=</span><span class="s1">'ok_smile.html'</span>
+<span class="n">ivs_0</span><span class="o">.</span><span class="n">plot_smile</span><span class="p">(</span><span class="o">*</span><span class="n">ix_best_slice</span><span class="p">,</span> <span class="n">release_date</span><span class="p">,</span> <span class="n">calibration_items_bid</span><span class="o">=</span><span class="n">calibration_items_bid</span><span class="p">,</span> <span class="n">calibration_items_ask</span><span class="o">=</span><span class="n">calibration_items_ask</span><span class="p">,</span> <span class="n">fn</span><span class="o">=</span><span class="n">fn</span><span class="p">,</span> <span class="n">open_browser</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">IFrame</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s1">'figures/'</span> <span class="o">+</span> <span class="n">fn</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s1">'100%'</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">600</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[9]:</div>
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
+<iframe allowfullscreen="" frameborder="0" height="600" src="figures/ok_smile.html" width="100%"></iframe>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=6e506644-5af1-4eb5-9bf3-719d175252f1">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<p>The quotes dominate the chart. One needs to zoom in to see the layering from top to bottom of ask IV/price, traded and fitted IV/price and bid IV/price.</p>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=3012d2fb-af08-4e1f-8a7f-de08de99db84">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [10]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">fn</span><span class="o">=</span><span class="s1">'ok_price.html'</span>
+<span class="n">ivs_0</span><span class="o">.</span><span class="n">plot_prices</span><span class="p">(</span><span class="o">*</span><span class="n">ix_best_slice</span><span class="p">,</span> <span class="n">release_date</span><span class="p">,</span> <span class="n">calibration_items_bid</span><span class="o">=</span><span class="n">calibration_items_bid</span><span class="p">,</span> <span class="n">calibration_items_ask</span><span class="o">=</span><span class="n">calibration_items_ask</span><span class="p">,</span> <span class="n">fn</span><span class="o">=</span><span class="n">fn</span><span class="p">,</span> <span class="n">open_browser</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">IFrame</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s1">'figures/'</span> <span class="o">+</span> <span class="n">fn</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s1">'100%'</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">600</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[10]:</div>
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
+<iframe allowfullscreen="" frameborder="0" height="600" src="figures/ok_price.html" width="100%"></iframe>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=6e769092-85d2-44f7-a265-1c91c66e736e">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<p>Now an example of a bad fit. Left side. The fitted IV is beyond the bid ask section in the low-strike region (left). A number of puts showcase this, getting better as the tenor increases. Changes to the weights, parameter bounds and simply hard conditions being within bid-ask spread may improve this. This data is fitted throughout the entire day's quotes, being within bid-ask may not yield a solution, but definitely worth exploring when fitting single market snap-shots.</p>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=44a1c521-1df9-4e2a-afaf-5f9c072f6013">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
 <div class="jp-InputPrompt jp-InputArea-prompt">In [11]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># ix_best_slice = ivs_t0.ps_rmse().index[ivs_t0.ps_rmse().argmax()]</span>
-<span class="n">ix_best_slice</span> <span class="o">=</span> <span class="p">(</span><span class="n">date</span><span class="p">(</span><span class="mi">2024</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span> <span class="s1">'call'</span><span class="p">)</span>
-<span class="n">fn</span><span class="o">=</span><span class="s1">'ok_smile.html'</span>
-<span class="n">ivs_t0</span><span class="o">.</span><span class="n">plot_smile</span><span class="p">(</span><span class="o">*</span><span class="n">ix_best_slice</span><span class="p">,</span> <span class="n">release_date</span><span class="p">,</span> <span class="n">calibration_items_bid</span><span class="o">=</span><span class="n">calibration_items_bid</span><span class="p">,</span> <span class="n">calibration_items_ask</span><span class="o">=</span><span class="n">calibration_items_ask</span><span class="p">,</span> <span class="n">fn</span><span class="o">=</span><span class="n">fn</span><span class="p">,</span> <span class="n">open_browser</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># ix_worst_slice = ivs_t0.ps_rmse().index[ivs_t0.ps_rmse().argmax()]</span>
+<span class="n">ix_worst_slice</span> <span class="o">=</span> <span class="p">(</span><span class="n">date</span><span class="p">(</span><span class="mi">2024</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">28</span><span class="p">),</span> <span class="s1">'put'</span><span class="p">)</span>
+<span class="n">fn</span><span class="o">=</span><span class="s1">'bad_smile.html'</span>
+<span class="n">ivs_0</span><span class="o">.</span><span class="n">plot_smile</span><span class="p">(</span><span class="o">*</span><span class="n">ix_worst_slice</span><span class="p">,</span> <span class="n">release_date</span><span class="p">,</span> <span class="n">calibration_items_bid</span><span class="o">=</span><span class="n">calibration_items_bid</span><span class="p">,</span> <span class="n">calibration_items_ask</span><span class="o">=</span><span class="n">calibration_items_ask</span><span class="p">,</span> <span class="n">fn</span><span class="o">=</span><span class="n">fn</span><span class="p">,</span> <span class="n">open_browser</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">IFrame</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s1">'figures/'</span> <span class="o">+</span> <span class="n">fn</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s1">'100%'</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">600</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -7840,47 +7968,6 @@ invalid value encountered in sqrt
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child jp-OutputArea-executeResult">
 <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[11]:</div>
-<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
-<iframe allowfullscreen="" frameborder="0" height="600" src="figures/ok_smile.html" width="100%"></iframe>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=6e769092-85d2-44f7-a265-1c91c66e736e">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p>Now an example for a plot not well matching. Too often, the model is parabolic during a fairly linear section leading to over and under estimation making it infeasible to use for pricing.</p>
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=44a1c521-1df9-4e2a-afaf-5f9c072f6013">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [12]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-<div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># ix_worst_slice = ivs_t0.ps_rmse().index[ivs_t0.ps_rmse().argmax()]</span>
-<span class="n">ix_worst_slice</span> <span class="o">=</span> <span class="p">(</span><span class="n">date</span><span class="p">(</span><span class="mi">2024</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="s1">'put'</span><span class="p">)</span>
-<span class="n">fn</span><span class="o">=</span><span class="s1">'bad_smile.html'</span>
-<span class="n">ivs_t0</span><span class="o">.</span><span class="n">plot_smile</span><span class="p">(</span><span class="o">*</span><span class="n">ix_worst_slice</span><span class="p">,</span> <span class="n">release_date</span><span class="p">,</span> <span class="n">calibration_items_bid</span><span class="o">=</span><span class="n">calibration_items_bid</span><span class="p">,</span> <span class="n">calibration_items_ask</span><span class="o">=</span><span class="n">calibration_items_ask</span><span class="p">,</span> <span class="n">fn</span><span class="o">=</span><span class="n">fn</span><span class="p">,</span> <span class="n">open_browser</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="n">IFrame</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s1">'figures/'</span> <span class="o">+</span> <span class="n">fn</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s1">'100%'</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">600</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell-outputWrapper">
-<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
-</div>
-<div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child jp-OutputArea-executeResult">
-<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[12]:</div>
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
 <iframe allowfullscreen="" frameborder="0" height="600" src="figures/bad_smile.html" width="100%"></iframe>
 </div>
@@ -7902,6 +7989,46 @@ invalid value encountered in sqrt
 </div>
 </div>
 </div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=665284a6-22fd-4f2e-b558-c5d8993137f4">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<p>There's a sign reversal for Rho / Psi for tenor=0.36. Let's plot that slice.</p>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=342eb16d-a90b-4c8a-ada3-f520f7578fd9">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [12]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">ix_best_slice</span> <span class="o">=</span> <span class="p">(</span><span class="n">date</span><span class="p">(</span><span class="mi">2024</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">18</span><span class="p">),</span> <span class="s1">'call'</span><span class="p">)</span>
+<span class="n">fn</span><span class="o">=</span><span class="s1">'reversed_sign_params.html'</span>
+<span class="n">ivs_0</span><span class="o">.</span><span class="n">plot_smile</span><span class="p">(</span><span class="o">*</span><span class="n">ix_best_slice</span><span class="p">,</span> <span class="n">release_date</span><span class="p">,</span> <span class="n">calibration_items_bid</span><span class="o">=</span><span class="n">calibration_items_bid</span><span class="p">,</span> <span class="n">calibration_items_ask</span><span class="o">=</span><span class="n">calibration_items_ask</span><span class="p">,</span> <span class="n">fn</span><span class="o">=</span><span class="n">fn</span><span class="p">,</span> <span class="n">open_browser</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">IFrame</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s1">'figures/'</span> <span class="o">+</span> <span class="n">fn</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s1">'100%'</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">600</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[12]:</div>
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
+<iframe allowfullscreen="" frameborder="0" height="600" src="figures/reversed_sign_params.html" width="100%"></iframe>
+</div>
+</div>
+</div>
+</div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=e04b7ff4-5550-4d15-8a47-27c19048a7dc">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
@@ -7910,8 +8037,8 @@ invalid value encountered in sqrt
 <div class="jp-InputPrompt jp-InputArea-prompt">In [13]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="n">fn</span> <span class="o">=</span> <span class="s1">'ivs_t0_params_rmse.html'</span>
-<span class="n">ivs_t0</span><span class="o">.</span><span class="n">plot_params_rmse</span><span class="p">(</span><span class="n">release_date</span><span class="p">,</span> <span class="n">fn</span><span class="o">=</span><span class="n">fn</span><span class="p">,</span> <span class="n">open_browser</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">fn</span> <span class="o">=</span> <span class="s1">'ivs_0_params_rmse.html'</span>
+<span class="n">ivs_0</span><span class="o">.</span><span class="n">plot_params_rmse</span><span class="p">(</span><span class="n">release_date</span><span class="p">,</span> <span class="n">fn</span><span class="o">=</span><span class="n">fn</span><span class="p">,</span> <span class="n">open_browser</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">IFrame</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s1">'figures/'</span> <span class="o">+</span> <span class="n">fn</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s1">'100%'</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">800</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -7925,8 +8052,19 @@ invalid value encountered in sqrt
 <div class="jp-OutputArea-child jp-OutputArea-executeResult">
 <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[13]:</div>
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
-<iframe allowfullscreen="" frameborder="0" height="800" src="figures/ivs_t0_params_rmse.html" width="100%"></iframe>
+<iframe allowfullscreen="" frameborder="0" height="800" src="figures/ivs_0_params_rmse.html" width="100%"></iframe>
 </div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=004b8469-b983-4a8b-9246-0b18f86618db">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h3 id="Arbitrage-free-surface">Arbitrage free surface<a class="anchor-link" href="#Arbitrage-free-surface">¶</a></h3><p>I implemented the reparameterization explained in the paper and set the bounds supposedly leading to an arb free surface. It's the key contribution the paper and here the surface plot calibrated on the exact same data set:</p>
 </div>
 </div>
 </div>
@@ -7937,12 +8075,136 @@ invalid value encountered in sqrt
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p>Questions for part 2:</p>
-<ol>
-<li>How good are the fits after enforcing conditions on the parameters to make the whole surface arb free?</li>
-<li>How is the fit after enforcing the model to be in between bid/ask prices?</li>
-<li>How do the fitting params behave intraday and across earnings releases. Can they be used for forecasting?</li>
+<p>Looks okay. Reversing signs on rho and psi can lead to very similar smiles. You play with the parameters in a small app I hosted, linked from homepage.
+But to analyse the behavior of the params over time, that is not really ideal and I will likely set fitting bounds for rho accordingly, in this case, smaller than zero.</p>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=fcf27d0d-8b1b-499b-96f8-57b1173a1905">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [14]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="o">%%capture</span>
+<span class="n">ivs_0_arb</span> <span class="o">=</span> <span class="n">IVSurface</span><span class="p">(</span><span class="n">equity</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">right</span> <span class="ow">in</span> <span class="p">[</span><span class="n">OptionRight</span><span class="o">.</span><span class="n">call</span><span class="p">,</span> <span class="n">OptionRight</span><span class="o">.</span><span class="n">put</span><span class="p">]:</span>
+    <span class="n">samples</span> <span class="o">=</span> <span class="p">{</span><span class="n">item</span><span class="o">.</span><span class="n">tenor_dt</span><span class="p">:</span> <span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">calibration_items</span> <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">right</span> <span class="o">==</span> <span class="n">right</span><span class="p">}</span>
+    <span class="n">ivs_0_arb</span><span class="o">.</span><span class="n">calibrate_surface_arb_free</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="n">samples</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre>2024-08-19 14:53:28,746 - INFO Calibrated in 220.04sec for FDX call total_rmse=0.8216614347268505
+2024-08-19 14:53:41,206 - INFO Calibrated in 12.46sec for FDX put total_rmse=1.7898495442234124
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=ca453645-d1fe-416b-accd-ba4aa39ef6eb">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [15]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">fn</span> <span class="o">=</span> <span class="s1">'ivs_0_arb_free.html'</span>
+<span class="n">ivs_0_arb</span><span class="o">.</span><span class="n">plot_surface</span><span class="p">(</span><span class="n">fn</span><span class="o">=</span><span class="n">fn</span><span class="p">,</span> <span class="n">open_browser</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">IFrame</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s1">'figures/'</span> <span class="o">+</span> <span class="n">fn</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s1">'100%'</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">800</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[15]:</div>
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
+<iframe allowfullscreen="" frameborder="0" height="800" src="figures/ivs_0_arb_free.html" width="100%"></iframe>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=5101bb27-4cef-4c36-870f-51c974c42948">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<p>Calibration takes significantly longer. My implementation is not optimized. For the purpose of studying the parameters over time, I stick with unconstrained fitting technique. Plotting the resulting params removed the earlier $\rho$ $\psi$ sign reversal and $\psi$(tenor) is overall smoother. RMSE increase by approximately 10%</p>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=6a30b08a-c2ca-4845-9a1e-9ed729fc2a8d">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [16]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">fn</span> <span class="o">=</span> <span class="s1">'ivs_arb_free_0_params_rmse.html'</span>
+<span class="n">ivs_0_arb</span><span class="o">.</span><span class="n">plot_params_rmse</span><span class="p">(</span><span class="n">release_date</span><span class="p">,</span> <span class="n">fn</span><span class="o">=</span><span class="n">fn</span><span class="p">,</span> <span class="n">open_browser</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">IFrame</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s1">'figures/'</span> <span class="o">+</span> <span class="n">fn</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s1">'100%'</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">800</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[16]:</div>
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
+<iframe allowfullscreen="" frameborder="0" height="800" src="figures/ivs_arb_free_0_params_rmse.html" width="100%"></iframe>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=c7e22d63-efcb-4a57-a0ea-4f82c7cf641f">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h4 id="Part-2:-Dynamic">Part 2: Dynamic<a class="anchor-link" href="#Part-2:-Dynamic">¶</a></h4><ol>
+<li>How do the fitting params behave intraday and across earnings releases.</li>
+<li>Can they be used for forecasting or decent confidence intervals?</li>
 </ol>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=e895a837-f8bd-4f27-801c-3f8868949c1d">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span> 
+</pre></div>
+</div>
 </div>
 </div>
 </div>
