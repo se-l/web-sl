@@ -30,7 +30,7 @@ function ContactDiscord() {
     let payload = `From: ${from}\n- ${msg}`
     
     try {
-      //axios.post(discordWebhookUrl, { content: payload });
+      axios.post(discordWebhookUrl, { content: payload });
       console.log(sendSuccess);
       setSendButtonTxt(sendSuccess);
       setSendButtonColor('success');
